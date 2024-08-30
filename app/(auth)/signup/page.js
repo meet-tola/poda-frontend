@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,17 +12,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckCircle2, Mail, Eye, EyeOff, User } from "lucide-react";
+import { Mail, Eye, EyeOff, User } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
-  const [showVerification, setShowVerification] = useState(false);
-  const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [resetSuccess, setResetSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const { signup, forgotPassword, error, isLoading } = useAuthStore();
 
   const calculatePasswordStrength = (pass) => {
     let strength = 0;
@@ -39,25 +46,19 @@ export default function SignUpPage() {
     setPasswordStrength(calculatePasswordStrength(newPassword));
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    // Simulate signup process
-    setShowVerification(true);
+    setLoading(true);
+    try {
+      await signup(email, password, username);
+      toast.success("Sign up successful!");
+      router.push("/verify-email");
+    } catch (error) {
+      toast.error("Sign up failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-    // Simulate password reset process
-    setShowResetPassword(true);
-  };
-
-  if (showVerification) {
-    return <VerificationPage />;
-  }
-
-  if (showResetPassword) {
-    return <ResetPasswordPage email={resetEmail} />;
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -66,7 +67,7 @@ export default function SignUpPage() {
       </div>
       <div className="flex flex-grow">
         <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
-          <div className="w-full max-w-md space-y-2">
+          <div className="w-full max-w-md space-y-4">
             <div className="w-full">
               <img
                 alt="Poda"
@@ -79,6 +80,7 @@ export default function SignUpPage() {
                 podcasts and audiobooks.
               </p>
             </div>
+
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -135,7 +137,7 @@ export default function SignUpPage() {
                 </div>
                 <Progress
                   value={passwordStrength}
-                  className="w-full h-[10px]"
+                  className="w-full h-[8px]"
                 />
                 <div className="flex justify-between text-sm">
                   <span>Password strength:</span>
@@ -147,36 +149,22 @@ export default function SignUpPage() {
                       : "Strong"}
                   </span>
                 </div>
+                {error && (
+                  <p className="text-red-500 font-semibold mt-2">{error}</p>
+                )}
               </div>
-              <div className="flex justify-between items-center">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="link" className="p-0">
-                      Forgot password?
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Reset Password</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleResetPassword}>
-                      <div className="space-y-4">
-                        <p>Please enter your email to reset your password.</p>
-                        <Input
-                          type="email"
-                          placeholder="Enter your email"
-                          value={resetEmail}
-                          onChange={(e) => setResetEmail(e.target.value)}
-                          required
-                        />
-                        <Button type="submit">Send Reset Link</Button>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-                <Button type="submit">Sign Up</Button>
-              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Signing Up..." : "Sign Up"}
+              </Button>
             </form>
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Already have an account?
+                <Link href="/signin">
+                  <Button variant="link">Log in</Button>
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
         <div className="hidden lg:block lg:w-1/2 p-10 bg-[#eeeeee]">
@@ -184,172 +172,9 @@ export default function SignUpPage() {
             src="/assets/Design - Dashboard 1.png"
             loading="lazy"
             alt="Image"
-            className="object-cover w-full h-full  object-left"
+            className="object-cover w-full h-full object-left"
           />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function VerificationPage() {
-  const [verificationCode, setVerificationCode] = useState([
-    "",
-    "",
-    "",
-    "",
-    "",
-  ]);
-  const [isVerified, setIsVerified] = useState(false);
-
-  const handleInputChange = (index, value) => {
-    if (value.length <= 1) {
-      const newCode = [...verificationCode];
-      newCode[index] = value;
-      setVerificationCode(newCode);
-      if (value && index < 4) {
-        document.getElementById(`digit-${index + 1}`)?.focus();
-      }
-    }
-  };
-
-  const handleVerify = (e) => {
-    e.preventDefault();
-    // Simulate verification process
-    setIsVerified(true);
-  };
-
-  return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-xl shadow-md">
-        <h2 className="text-3xl font-bold text-center">Verify Your Email</h2>
-        {isVerified ? (
-          <div className="text-center space-y-4">
-            <CheckCircle2 className="mx-auto text-green-500" size={64} />
-            <p className="text-xl">Email verified successfully!</p>
-          </div>
-        ) : (
-          <>
-            <p className="text-center text-gray-600">
-              We&apos;ve sent a 5-digit code to your email. Please enter it
-              below to verify your account.
-            </p>
-            <form onSubmit={handleVerify} className="space-y-6">
-              <div className="flex justify-between">
-                {verificationCode.map((digit, index) => (
-                  <Input
-                    key={index}
-                    id={`digit-${index}`}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    className="w-12 h-12 text-center text-2xl"
-                    value={digit}
-                    onChange={(e) => handleInputChange(index, e.target.value)}
-                  />
-                ))}
-              </div>
-              <Button type="submit" className="w-full">
-                Verify
-              </Button>
-            </form>
-            <p className="text-center text-sm text-gray-500">
-              Didn&apos;t receive the code?{" "}
-              <Button variant="link" className="p-0">
-                Resend
-              </Button>
-            </p>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ResetPasswordPage({ email }) {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isReset, setIsReset] = useState(false);
-
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-    if (newPassword === confirmPassword) {
-      // Simulate password reset process
-      setIsReset(true);
-    } else {
-      alert("Passwords don't match");
-    }
-  };
-
-  return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-xl shadow-md">
-        <h2 className="text-3xl font-bold text-center">Reset Password</h2>
-        {isReset ? (
-          <div className="text-center space-y-4">
-            <CheckCircle2 className="mx-auto text-green-500" size={64} />
-            <p className="text-xl">Password reset successfully!</p>
-            <Button onClick={() => window.location.reload()}>
-              Back to Sign In
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={handleResetPassword} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} disabled />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
-              <div className="relative">
-                <Input
-                  id="new-password"
-                  type={showNewPassword ? "text" : "password"}
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                >
-                  {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" className="w-full">
-              Reset Password
-            </Button>
-          </form>
-        )}
       </div>
     </div>
   );

@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BellIcon, HomeIcon, LibraryIcon, MenuIcon, MicIcon, SearchIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
-import Poda from "@/assets/header-logo.svg";
 
 export function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -51,7 +49,7 @@ export function Navbar() {
                       <Button key={i} variant="ghost" className="w-full justify-start">
                         <div className="flex items-center gap-2">
                           <div className="relative">
-                            <Image
+                            <img
                               alt="Podcast cover"
                               className="h-8 w-8 rounded-full object-cover"
                               height="32"
@@ -72,7 +70,7 @@ export function Navbar() {
               </div>
             </SheetContent>
           </Sheet>
-          <Image src={Poda} alt="Poda" className="h-8 object-contain" />
+          <img src="/assets/header-logo.svg" alt="Poda" className="h-8 object-contain" />
 
         </div>
         <div className="flex items-center gap-4">
@@ -91,7 +89,7 @@ export function Navbar() {
           </form>
           <Button className="hidden sm:inline-flex">Create</Button>
           <BellIcon className="h-6 w-6" />
-          <Image
+          <img
             alt="Profile"
             className="h-8 w-8 rounded-full"
             height="32"
