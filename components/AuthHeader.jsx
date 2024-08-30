@@ -23,9 +23,6 @@ const AuthHeader = () => {
 
         <div className="flex gap-2 items-center">
           <div className="md:hidden flex items-center gap-2">
-            <Link href="/signin">
-              <Button variant="outline">Login</Button>
-            </Link>
             <Link href="/signup">
               <Button>Signup</Button>
             </Link>

@@ -14,20 +14,22 @@ export default function VerificationPage() {
   const router = useRouter();
 
   const handleChange = (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 5);
-    setCode(value);
+    const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
+    setCode(value);    
   };
 
   const handleVerify = async (e) => {
     e.preventDefault();
+    console.log(code);
+
     try {
       await verifyEmail(code);
-      router.push("/");
       toast.success("Email verified successfully");
+      setIsVerified(true);
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
-    setIsVerified(true);
   };
 
   return (
@@ -52,20 +54,23 @@ export default function VerificationPage() {
               We've sent a 5-digit code to your email. Please enter it below to
               verify your account.
             </p>
-            <form onSubmit={handleVerify} className="space-y-6">
+            <form onSubmit={handleVerify} className="space-y-4">
               <div className="flex justify-between">
                 <Input
                   id="code"
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  maxLength={5}
+                  maxLength={6}
                   value={code}
                   onChange={handleChange}
                   placeholder="Enter 5-digit code"
                   className="text-center text-xl"
                 />
               </div>
+              {error && (
+                  <p className="text-red-500 font-semibold mt-2">{error}</p>
+                )}
               <Button type="submit" className="w-full">
                 Verify
               </Button>

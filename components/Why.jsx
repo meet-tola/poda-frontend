@@ -53,7 +53,7 @@ const WhyCards = () => {
 
 export default function Why() {
   return (
-    <section id="about_us" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-black to-gray-900">
+    <section id="about_us" className="py-16 px-4 sm:px-6 lg:px-12 bg-gradient-to-b from-black to-gray-900">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4">Why Choose PodA?</h2>
         <p className="text-center text-gray-300 max-w-2xl mx-auto mb-12">

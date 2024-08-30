@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Mail, Eye, EyeOff, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import Link from "next/link";
@@ -24,11 +17,9 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
-  const [resetSuccess, setResetSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { signup, forgotPassword, error, isLoading } = useAuthStore();
+  const { signup, error, isLoading } = useAuthStore();
 
   const calculatePasswordStrength = (pass) => {
     let strength = 0;
@@ -44,6 +35,7 @@ export default function SignUpPage() {
     const newPassword = e.target.value;
     setPassword(newPassword);
     setPasswordStrength(calculatePasswordStrength(newPassword));
+    
   };
 
   const handleSignUp = async (e) => {
@@ -54,7 +46,7 @@ export default function SignUpPage() {
       toast.success("Sign up successful!");
       router.push("/verify-email");
     } catch (error) {
-      toast.error("Sign up failed. Please try again.");
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -135,10 +127,7 @@ export default function SignUpPage() {
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
-                <Progress
-                  value={passwordStrength}
-                  className="w-full h-[8px]"
-                />
+                <Progress value={passwordStrength} className="w-full h-[8px]" />
                 <div className="flex justify-between text-sm">
                   <span>Password strength:</span>
                   <span>

@@ -1,73 +1,87 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
 import Link from "next/link";
-import {
-  FacebookIcon,
-  LinkedinIcon,
-  TwitterIcon,
-} from "lucide-react";
+import { Facebook, Linkedin, Twitter } from "lucide-react";
 
 const Footer = () => {
-  const date = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
+
+  const footerLinks = [
+    {
+      title: "Product",
+      links: ["Home", "Updates", "Services"],
+    },
+    {
+      title: "About",
+      links: ["About Us", "Blog", "Careers"],
+    },
+    {
+      title: "Support",
+      links: ["Contact", "Whatsapp", "Telegram"],
+    },
+    {
+      title: "Try Now",
+      links: ["Why PodA?", "Support"],
+    },
+  ];
+
   return (
-    <>
-      <div className="bg-[#f5f1ee] min-h-[250px] flex flex-col  items-center w-full">
-        <div className="max-md:flex max-md:flex-col pt-10 flex justify-between px-4 md:px-16 w-full">
-          <div>
-            <Link href="/">
+    <footer className="w-full bg-[#f5f1ee] py-12 px-4 md:px-8 lg:px-16">
+      <div className="container mx-auto">
+        <div className="flex flex-col md:flex-row justify-between gap-8">
+          <div className="flex flex-col items-start">
+            <Link href="/" aria-label="Go to PodA homepage">
               <Image
-                alt="PodaLogo"
+                alt="PodA Logo"
                 src="/assets/header-logo.svg"
                 width={100}
                 height={40}
-                className="object-cover"
+                className="object-contain"
               />
             </Link>
-            <p className="text-[13px] my-2">
-              All rights reserved @ PodA {date}{" "}
+            <p className="text-sm mt-4 text-gray-600">
+              All rights reserved © PodA {currentYear}
             </p>
-            <div className="flex items-center gap-4">
-              <div className="w-[40px] h-[40px] flex items-center justify-center rounded-full bg-black text-white">
-                <FacebookIcon />
-              </div>
-              <div className="w-[40px] h-[40px] flex items-center justify-center rounded-full bg-black text-white">
-                <LinkedinIcon />
-              </div>
-              <div className="w-[40px] h-[40px] flex items-center justify-center rounded-full bg-black text-white">
-                <TwitterIcon />
-              </div>
+            <div className="flex items-center gap-4 mt-6">
+              {[
+                { Icon: Facebook, label: "Facebook" },
+                { Icon: Linkedin, label: "LinkedIn" },
+                { Icon: Twitter, label: "Twitter" },
+              ].map(({ Icon, label }) => (
+                <Link
+                  key={label}
+                  href={`https://${label.toLowerCase()}.com`}
+                  aria-label={`Visit our ${label} page`}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+                >
+                  <Icon fill="white" strokeWidth={0} size={20} />
+                </Link>
+              ))}
             </div>
           </div>
-          <div className="flex w-[calc(90vw-350px)] max-md:w-[95%] max-md:flex-col justify-between">
-            <div className="max-md:my-3">
-              <div className="font-bold">Product</div>
-              <div className="mt-1">Home</div>
-              <div className="mt-1">Updates</div>
-              <div className="mt-1">Services</div>
-            </div>
-            <div className="max-md:my-3">
-              <div className="font-bold">About</div>
-              <div className="mt-1">About Us</div>
-              <div className="mt-1">Blog</div>
-              <div className="mt-1">Careers</div>
-            </div>
-            <div className="max-md:my-3">
-              <div className="font-bold">Support</div>
-              <div className="mt-1">Contact</div>
-              <div className="mt-1">Whatsapp</div>
-              <div className="mt-1">Telegram</div>
-            </div>
-            <div className="max-md:my-3">
-              <div className="font-bold">Try Now</div>
-              <div className="mt-1">Why PodA?</div>
-              <div className="mt-1">Support</div>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {footerLinks.map((section) => (
+              <div key={section.title}>
+                <h3 className="font-bold text-lg mb-3">{section.title}</h3>
+                <ul className="space-y-2">
+                  {section.links.map((link) => (
+                    <li key={link}>
+                      <Link
+                        href="#"
+                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        {link}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    </footer>
   );
 };
 
